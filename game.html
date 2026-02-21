@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Learning Snake Game</title>
+
+<style>
+/* ===== PAGE ===== */
+body {
+  background: #111;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+/* ===== GAME BOARD ===== */
+#game {
+  width: 400px;
+  height: 400px;
+  background: #222;
+  border: 4px solid #555;
+  margin: auto;
+  position: relative;
+}
+
+/* ===== SNAKE PART ===== */
+.snake {
+  width: 20px;
+  height: 20px;
+  background: green;
+  position: absolute;
+}
+
+/* ===== FOOD ===== */
+#food {
+  width: 20px;
+  height: 20px;
+  background: red;
+  position: absolute;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🐍 Learning Snake</h1>
+<p>Use Arrow Keys</p>
+
+<div id="game">
+  <div id="food"></div>
+</div>
+
+<script>
+/* ===== BASIC VARIABLES ===== */
+
+// game box
+const game = document.getElementById("game");
+
+// food box
+const food = document.getElementById("food");
+
+// size of each square
+const size = 20;
+
+// snake body (array of positions)
+let snake = [
+  { x: 5, y: 5 }
+];
+
+// direction snake moves
+let direction = { x: 1, y: 0 };
+
+/* ===== PLACE FOOD RANDOMLY ===== */
+function placeFood() {
+  food.style.left = Math.floor(Math.random() * 20) * size + "px";
+  food.style.top  = Math.floor(Math.random() * 20) * size + "px";
+}
+placeFood();
+
+/* ===== DRAW SNAKE ===== */
+function drawSnake() {
+  // remove old snake
+  document.querySelectorAll(".snake").forEach(e => e.remove());
+
+  // draw each part
+  snake.forEach(part => {
+    const div = document.createElement("div");
+    div.className = "snake";
+    div.style.left = part.x * size + "px";
+    div.style.top  = part.y * size + "px";
+    game.appendChild(div);
+  });
+}
+
+/* ===== GAME LOOP ===== */
+function moveSnake() {
+  // new head position
+  const head = {
+    x: snake[0].x + direction.x,
+    y: snake[0].y + direction.y
+  };
+
+  // wall collision
+  if (head.x < 0 || head.y < 0 || head.x >= 20 || head.y >= 20) {
+    alert("Game Over");
+    location.reload();
+  }
+
+  // add new head
+  snake.unshift(head);
+
+  // check if food eaten
+  if (
+    head.x * size === food.offsetLeft &&
+    head.y * size === food.offsetTop
+  ) {
+    placeFood(); // keep tail (grow)
+  } else {
+    snake.pop(); // remove tail
+  }
+
+  drawSnake();
+}
+
+/* ===== KEYBOARD CONTROL ===== */
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp")    direction = { x: 0, y: -1 };
+  if (e.key === "ArrowDown")  direction = { x: 0, y: 1 };
+  if (e.key === "ArrowLeft")  direction = { x: -1, y: 0 };
+  if (e.key === "ArrowRight") direction = { x: 1, y: 0 };
+});
+
+/* ===== START GAME ===== */
+setInterval(moveSnake, 200);
+</script>
+
+</body>
+</html>
